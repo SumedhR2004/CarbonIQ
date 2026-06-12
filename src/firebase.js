@@ -123,6 +123,19 @@ export const subscribeToAuth = (callback) => {
 };
 
 // Database services
+
+/**
+ * Saves a completed carbon footprint calculation.
+ * SECURITY: If Firebase is available and the user is authenticated, the document is saved with the 
+ * explicit userId (user.uid). Security rules in Firestore must restrict write permissions to this UID.
+ * Fallback to local offline cache mode if offline or unauthenticated.
+ * 
+ * @param {object} user - The authenticated Firebase user object or null.
+ * @param {object} answers - The collection of survey answers.
+ * @param {number} score - The computed carbon footprint score (kg/yr).
+ * @param {Array} actionPlan - The calculated personalized action plan list.
+ * @returns {Promise<object>} The saved calculation record.
+ */
 export const saveCalculationResult = async (user, answers, score, actionPlan) => {
   const data = {
     answers,
@@ -150,6 +163,15 @@ export const saveCalculationResult = async (user, answers, score, actionPlan) =>
   }
 };
 
+/**
+ * Fetches the user's calculation run history.
+ * SECURITY: Restricts collection queries strictly to the authenticated user's ID (user.uid).
+ * Firestore rules must prevent reads where request.auth.uid !== resource.data.userId.
+ * Falls back to offline LocalStorage history if Firebase is unavailable.
+ * 
+ * @param {object} user - The authenticated Firebase user object.
+ * @returns {Promise<Array>} List of the latest 10 calculation records.
+ */
 export const fetchCalculationHistory = async (user) => {
   const userId = user ? user.uid : 'anonymous';
 

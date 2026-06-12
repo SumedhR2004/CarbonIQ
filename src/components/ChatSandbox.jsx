@@ -743,15 +743,20 @@ export default function ChatSandbox({
             }}>
               <Bot size={16} style={{ color: 'hsl(186, 94%, 62%)' }} />
             </div>
-            <div style={{
-              background: 'hsla(205, 50%, 10%, 0.6)',
-              border: '1px solid hsla(186, 60%, 50%, 0.15)',
-              borderRadius: '0 16px 16px 16px',
-              padding: '12px 20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
+            <div 
+              role="status"
+              aria-live="polite"
+              aria-label="CarbonIQ is typing"
+              style={{
+                background: 'hsla(205, 50%, 10%, 0.6)',
+                border: '1px solid hsla(186, 60%, 50%, 0.15)',
+                borderRadius: '0 16px 16px 16px',
+                padding: '12px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
               <div className="dot" style={{ width: '6px', height: '6px', backgroundColor: 'hsl(186, 94%, 62%)', borderRadius: '50%', animation: 'pulseGlow 1s infinite alternate' }}></div>
               <div className="dot" style={{ width: '6px', height: '6px', backgroundColor: 'hsl(186, 94%, 62%)', borderRadius: '50%', animation: 'pulseGlow 1s infinite alternate 0.2s' }}></div>
               <div className="dot" style={{ width: '6px', height: '6px', backgroundColor: 'hsl(186, 94%, 62%)', borderRadius: '50%', animation: 'pulseGlow 1s infinite alternate 0.4s' }}></div>
@@ -814,6 +819,8 @@ export default function ChatSandbox({
         }}>
           <input
             type="text"
+            id="chat-input"
+            aria-label="Chat Message Input"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
@@ -833,6 +840,7 @@ export default function ChatSandbox({
           <button
             onClick={() => handleSendMessage()}
             className="btn btn-primary"
+            aria-label="Send message"
             disabled={isLoading || !inputValue.trim()}
             style={{
               width: '46px',

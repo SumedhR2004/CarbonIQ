@@ -167,7 +167,13 @@ export default function AnalyticsDashboard({
 
         {/* Circular Dial (SVG representation) */}
         <div style={{ position: 'relative', width: '130px', height: '130px', marginBottom: '12px' }}>
-          <svg width="130" height="130" viewBox="0 0 100 100">
+          <svg 
+            width="130" 
+            height="130" 
+            viewBox="0 0 100 100"
+            role="img"
+            aria-label={`Carbon footprint dial displaying ${finalScore} kilograms of CO2 per year, which is ${percentOfGlobal}% of the global average.`}
+          >
             {/* Background circle */}
             <circle
               cx="50"
@@ -389,9 +395,17 @@ export default function AnalyticsDashboard({
             {actionPlan.map((action, idx) => {
               const isChecked = completedActions.has(action.action);
               return (
-                <div 
+                 <div 
                   key={idx}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleActionToggle(action)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleActionToggle(action);
+                    }
+                  }}
                   className="glass glass-interactive"
                   style={{
                     padding: '12px 14px',
@@ -406,6 +420,8 @@ export default function AnalyticsDashboard({
                 >
                   <input
                     type="checkbox"
+                    id={`action-checkbox-${idx}`}
+                    aria-label={`Complete action: ${action.action}`}
                     checked={isChecked}
                     onChange={() => {}} // Handled by div click
                     style={{
@@ -450,6 +466,7 @@ export default function AnalyticsDashboard({
             </h3>
             <button 
               onClick={onClearHistory} 
+              aria-label="Clear History"
               style={{ background: 'transparent', border: 'none', color: 'hsl(var(--danger))', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }}
             >
               <Trash2 size={12} />
@@ -460,7 +477,15 @@ export default function AnalyticsDashboard({
             {history.map((item) => (
               <div 
                 key={item.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => onLoadHistoryItem(item)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onLoadHistoryItem(item);
+                  }
+                }}
                 className="glass-interactive"
                 style={{
                   padding: '8px 12px',

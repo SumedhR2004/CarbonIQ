@@ -271,6 +271,7 @@ export default function PromptLab({
             <button
               type="button"
               onClick={() => setEngineMode('local')}
+              aria-pressed={engineMode === 'local'}
               style={{
                 padding: '7px 12px',
                 borderRadius: '7px',
@@ -288,6 +289,7 @@ export default function PromptLab({
             <button
               type="button"
               onClick={() => setEngineMode('gemini')}
+              aria-pressed={engineMode === 'gemini'}
               style={{
                 padding: '7px 12px',
                 borderRadius: '7px',
@@ -314,7 +316,7 @@ export default function PromptLab({
         {engineMode === 'gemini' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }} className="animate-fade-in">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label style={{ fontSize: '11px', fontWeight: '600', color: 'hsl(var(--text-muted))' }}>Gemini API Key</label>
+              <label htmlFor="gemini-api-key" style={{ fontSize: '11px', fontWeight: '600', color: 'hsl(var(--text-muted))' }}>Gemini API Key</label>
               <button 
                 type="button" 
                 onClick={() => setShowKey(!showKey)} 
@@ -326,9 +328,11 @@ export default function PromptLab({
             </div>
             <input
               type={showKey ? 'text' : 'password'}
+              id="gemini-api-key"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="AIzaSy..."
+              autoComplete="new-password"
               className="input-field"
               style={{ fontSize: '12px', padding: '8px 12px' }}
             />
@@ -342,11 +346,13 @@ export default function PromptLab({
         {/* Temperature */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-            <span style={{ color: 'hsl(var(--text-muted))', fontWeight: '500' }}>Temperature</span>
+            <label htmlFor="model-temperature" style={{ color: 'hsl(var(--text-muted))', fontWeight: '500' }}>Temperature</label>
             <span style={{ fontWeight: '600', color: 'hsl(186, 94%, 70%)' }}>{temperature}</span>
           </div>
           <input
             type="range"
+            id="model-temperature"
+            aria-label="Model Temperature"
             min="0.0"
             max="1.0"
             step="0.1"
@@ -385,9 +391,9 @@ export default function PromptLab({
           {showAdvanced && (
             <div className="animate-fade-in" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '10px', color: 'hsl(var(--text-muted))' }}>
+                <label htmlFor="system-prompt-textarea" style={{ fontSize: '10px', color: 'hsl(var(--text-muted))' }}>
                   Used when Gemini LLM mode is active
-                </span>
+                </label>
                 <button 
                   type="button" 
                   onClick={handleReset} 
@@ -398,6 +404,8 @@ export default function PromptLab({
                 </button>
               </div>
               <textarea
+                id="system-prompt-textarea"
+                aria-label="System Instruction Prompt"
                 value={systemPrompt}
                 onChange={(e) => setSystemPrompt(e.target.value)}
                 className="input-field"

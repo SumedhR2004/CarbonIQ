@@ -134,22 +134,30 @@ export default function Header({ user }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <img
               src={user.photoURL || 'https://api.dicebear.com/7.x/bottts/svg?seed=user'}
-              alt={user.displayName}
+              alt={user.displayName || "User Profile Photo"}
               style={{
                 width: '34px', height: '34px', borderRadius: '50%',
                 border: '2px solid hsla(186, 94%, 42%, 0.4)',
                 boxShadow: '0 0 10px hsla(186, 94%, 42%, 0.2)'
               }}
             />
-            <button onClick={handleAuth} className="btn btn-secondary"
-              style={{ padding: '7px 13px', fontSize: '12px' }}>
+            <button 
+              onClick={handleAuth} 
+              className="btn btn-secondary"
+              aria-label="Sign Out"
+              style={{ padding: '7px 13px', fontSize: '12px' }}
+            >
               <LogOut size={13} />
               <span>Sign Out</span>
             </button>
           </div>
         ) : (
-          <button onClick={handleAuth} className="btn btn-primary"
-            style={{ padding: '9px 18px', fontSize: '13px' }}>
+          <button 
+            onClick={handleAuth} 
+            className="btn btn-primary"
+            aria-label="Sign In with Google"
+            style={{ padding: '9px 18px', fontSize: '13px' }}
+          >
             <LogIn size={14} />
             <span>Sign In with Google</span>
           </button>
