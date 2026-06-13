@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Header from '../components/Header';
 import PromptLab from '../components/PromptLab';
@@ -177,6 +178,102 @@ describe('CarbonIQ UI Component Tests', () => {
       expect(screen.getByText(/How do you mainly commute/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Car/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Public Transport/i })).toBeInTheDocument();
+    });
+
+    it('runs through the full 8-question local simulation and calls onSaveResult', () => {
+      vi.useFakeTimers();
+      
+      const onSaveResultMock = vi.fn();
+
+      function TestWrapper() {
+        const [answers, setAnswers] = useState({
+          transport: null, commuteDistance: null, diet: null, foodWaste: null,
+          electricity: null, digital: null, shopping: null, flights: null
+        });
+        const [score, setScore] = useState(0);
+        const [actionPlan, setActionPlan] = useState([]);
+
+        return (
+          <ChatSandbox
+            systemPrompt="Test Prompt"
+            engineMode="local"
+            apiKey=""
+            temperature={0.7}
+            answers={answers}
+            setAnswers={setAnswers}
+            setScore={setScore}
+            setActionPlan={setActionPlan}
+            onSaveResult={onSaveResultMock}
+          />
+        );
+      }
+
+      render(<TestWrapper />);
+
+      // Start the calculator
+      fireEvent.click(screen.getByRole('button', { name: /Start Calculator/i }));
+      
+      // Question 1: Commute
+      expect(screen.getByText(/How do you mainly commute/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Car/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Question 2: Distance
+      expect(screen.getByText(/How far is your daily commute/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Under 5 km/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Question 3: Diet
+      expect(screen.getByText(/What best describes your diet/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Meat daily/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Question 4: Food Waste
+      expect(screen.getByText(/How much food do you typically waste/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /A lot/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Question 5: Electricity
+      expect(screen.getByText(/How many hours daily do you use AC/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /2 hours/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Question 6: Shopping
+      expect(screen.getByText(/How often do you buy new clothes/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Weekly/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Question 7: Digital
+      expect(screen.getByText(/How many hours per day do you spend streaming/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /3 hours/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Question 8: Flights
+      expect(screen.getByText(/How many flights did you take last year/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /0 flights/i }));
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      // Completed
+      expect(screen.getByText(/YOUR CARBON FOOTPRINT REPORT/i)).toBeInTheDocument();
+      expect(onSaveResultMock).toHaveBeenCalled();
+
+      vi.useRealTimers();
     });
   });
 });

@@ -396,17 +396,9 @@ export default function AnalyticsDashboard({
             {actionPlan.map((action, idx) => {
               const isChecked = completedActions.has(action.action);
               return (
-                 <div 
+                 <label 
                   key={idx}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => handleActionToggle(action)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleActionToggle(action);
-                    }
-                  }}
+                  htmlFor={`action-checkbox-${idx}`}
                   className="glass glass-interactive"
                   style={{
                     padding: '12px 14px',
@@ -422,9 +414,8 @@ export default function AnalyticsDashboard({
                   <input
                     type="checkbox"
                     id={`action-checkbox-${idx}`}
-                    aria-label={`Complete action: ${action.action}`}
                     checked={isChecked}
-                    onChange={() => {}} // Handled by div click
+                    onChange={() => handleActionToggle(action)}
                     style={{
                       marginTop: '3px',
                       accentColor: 'hsl(var(--primary))',
@@ -450,7 +441,7 @@ export default function AnalyticsDashboard({
                       </span>
                     </div>
                   </div>
-                </div>
+                </label>
               );
             })}
           </div>
