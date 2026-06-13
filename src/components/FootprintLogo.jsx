@@ -1,11 +1,4 @@
-import React from 'react';
-
-/**
- * Custom CarbonIQ Logo — Footprint with CO₂ 
- * A carbon footprint icon with a small CO₂ label
- */
 export default function FootprintLogo({ size = 24, glowColor = 'hsl(186, 94%, 62%)' }) {
-  const scale = size / 24;
   return (
     <svg
       width={size}

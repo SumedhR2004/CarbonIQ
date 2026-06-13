@@ -1,11 +1,10 @@
-// @vitest-environment jsdom
-import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Header from '../components/Header';
 import PromptLab from '../components/PromptLab';
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import ChatSandbox from '../components/ChatSandbox';
 
 // Mock canvas-confetti to prevent canvas errors in jsdom
 vi.mock('canvas-confetti', () => ({
@@ -124,6 +123,60 @@ describe('CarbonIQ UI Component Tests', () => {
       expect(screen.getByText('3,000')).toBeInTheDocument();
       expect(screen.getByText(/regional benchmarks/i)).toBeInTheDocument();
       expect(screen.getByText('Save energy')).toBeInTheDocument();
+    });
+  });
+
+  describe('ChatSandbox Component', () => {
+    it('renders the welcome screen by default', () => {
+      const setAnswers = vi.fn();
+      const setScore = vi.fn();
+      const setActionPlan = vi.fn();
+      const onSaveResult = vi.fn();
+
+      render(
+        <ChatSandbox
+          systemPrompt="Test Prompt"
+          engineMode="local"
+          apiKey=""
+          temperature={0.7}
+          answers={{}}
+          setAnswers={setAnswers}
+          setScore={setScore}
+          setActionPlan={setActionPlan}
+          onSaveResult={onSaveResult}
+        />
+      );
+
+      expect(screen.getByText(/Calculate Your Carbon Footprint/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Start Calculator/i })).toBeInTheDocument();
+    });
+
+    it('starts conversation and displays first question on click', () => {
+      const setAnswers = vi.fn();
+      const setScore = vi.fn();
+      const setActionPlan = vi.fn();
+      const onSaveResult = vi.fn();
+
+      render(
+        <ChatSandbox
+          systemPrompt="Test Prompt"
+          engineMode="local"
+          apiKey=""
+          temperature={0.7}
+          answers={{}}
+          setAnswers={setAnswers}
+          setScore={setScore}
+          setActionPlan={setActionPlan}
+          onSaveResult={onSaveResult}
+        />
+      );
+
+      const startBtn = screen.getByRole('button', { name: /Start Calculator/i });
+      fireEvent.click(startBtn);
+
+      expect(screen.getByText(/How do you mainly commute/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Car/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Public Transport/i })).toBeInTheDocument();
     });
   });
 });

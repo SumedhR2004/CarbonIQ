@@ -1,7 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, HelpCircle, AlertCircle, Play, RefreshCw } from 'lucide-react';
+import { useState, useRef, useEffect, Fragment } from 'react';
+import { Send, User, Bot, Play, RefreshCw } from 'lucide-react';
 import FootprintLogo from './FootprintLogo';
 import { calculateCategoryScore, calculateTotalScore, generateActionPlan } from '../utils/carbonRules';
+
+const getRandomFact = () => {
+  const facts = [
+    "A tree absorbs ~22 kg CO₂ per year. Small forests can offset households! 🌳",
+    "The ocean absorbs 30% of human CO₂, causing ocean acidification. 🌊",
+    "Turning off lights saves ~40 kg CO₂ per year. 💡",
+    "A Google search uses ~0.2g CO₂. This chat? Almost nothing! 😄",
+    "If food waste were a country, it'd be the 3rd largest emitter. 🍎",
+    "Your phone charger left plugged in uses 5-10 watts continuously. 🔌",
+    "Recycling one aluminum can saves enough energy to run a TV for 3 hours. 📺"
+  ];
+  return facts[Math.floor(Math.random() * facts.length)];
+};
+
+const generateId = (prefix) => {
+  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+};
 
 export default function ChatSandbox({ 
   systemPrompt, 
@@ -10,9 +27,7 @@ export default function ChatSandbox({
   temperature,
   answers,
   setAnswers,
-  score,
   setScore,
-  actionPlan,
   setActionPlan,
   onSaveResult
 }) {
@@ -25,7 +40,9 @@ export default function ChatSandbox({
 
   // Auto scroll to bottom
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (typeof messagesEndRef.current?.scrollIntoView === 'function') {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
@@ -56,7 +73,7 @@ export default function ChatSandbox({
     setHasStarted(true);
     setLocalStep(1);
     setMessages([{
-      id: 'welcome-' + Date.now(),
+      id: generateId('welcome'),
       role: 'model',
       text: "Hey there! I'm CarbonIQ 🌊 — your personal carbon footprint analyst.\n\nI'll walk you through 8 targeted questions about your lifestyle and calculate your precise CO₂ impact across 7 categories. Then I'll generate a personalized reduction plan.\n\nLet's dive in! 🐬\n\nQuestion 1 of 8: How do you mainly commute?\n→ Car\n→ Public transport (bus, train, metro)\n→ Bike or walking",
       timestamp: new Date()
@@ -201,7 +218,7 @@ export default function ChatSandbox({
         const finalScore = calculateTotalScore(updatedAnswers);
         const plan = generateActionPlan(updatedAnswers);
 
-        let flightComment = '';
+        let flightComment;
         if (updatedAnswers.flights === 0) {
           flightComment = '✈️ Zero flights — ground travel champion! 🏆';
         } else if (updatedAnswers.flights <= 2) {
@@ -210,7 +227,7 @@ export default function ChatSandbox({
           flightComment = `✈️ ${updatedAnswers.flights} flights = ${(updatedAnswers.flights * 500).toLocaleString()} kg CO₂. A round-trip London→NYC emits more CO₂ than some people produce in an entire year!`;
         }
 
-        let verdict = '';
+        let verdict;
         if (finalScore < 1900) {
           verdict = "🏆 Incredible! You're below India's average (1,900 kg) — you're an eco-leader!\nHere's how to push even further:";
         } else if (finalScore <= 4800) {
@@ -234,16 +251,7 @@ export default function ChatSandbox({
 
       default: {
         const currentTotal = calculateTotalScore(updatedAnswers);
-        const facts = [
-          "A tree absorbs ~22 kg CO₂ per year. Small forests can offset households! 🌳",
-          "The ocean absorbs 30% of human CO₂, causing ocean acidification. 🌊",
-          "Turning off lights saves ~40 kg CO₂ per year. 💡",
-          "A Google search uses ~0.2g CO₂. This chat? Almost nothing! 😄",
-          "If food waste were a country, it'd be the 3rd largest emitter. 🍎",
-          "Your phone charger left plugged in uses 5-10 watts continuously. 🔌",
-          "Recycling one aluminum can saves enough energy to run a TV for 3 hours. 📺"
-        ];
-        const randomFact = facts[Math.floor(Math.random() * facts.length)];
+        const randomFact = getRandomFact();
         botReply = `Your score: ${currentTotal.toLocaleString()} kg CO₂/year.\n\n💡 ${randomFact}\n\nCheck off actions in the right panel, or click "Restart Calculator" for a new calculation!`;
         break;
       }
@@ -255,7 +263,7 @@ export default function ChatSandbox({
     // Add Bot reply with slight delayed writing feel
     setTimeout(() => {
       setMessages(prev => [...prev, {
-        id: 'bot-' + Date.now(),
+        id: generateId('bot'),
         role: 'model',
         text: botReply,
         timestamp: new Date()
@@ -348,7 +356,7 @@ export default function ChatSandbox({
 
     // Add user message
     const userMsg = {
-      id: 'user-' + Date.now(),
+      id: generateId('user'),
       role: 'user',
       text: text,
       timestamp: new Date()
@@ -364,7 +372,7 @@ export default function ChatSandbox({
       if (!apiKey) {
         setTimeout(() => {
           setMessages(prev => [...prev, {
-            id: 'api-missing-' + Date.now(),
+            id: generateId('api-missing'),
             role: 'model',
             text: "⚠️ Gemini API key is missing. Please enter your API key in the Prompt Lab (left sidebar) or toggle the engine mode to 'Local Simulator'.",
             timestamp: new Date()
@@ -384,7 +392,7 @@ export default function ChatSandbox({
       const reply = await callGeminiAPI(chatContents);
       
       setMessages(prev => [...prev, {
-        id: 'bot-' + Date.now(),
+        id: generateId('bot'),
         role: 'model',
         text: reply,
         timestamp: new Date()
@@ -524,7 +532,7 @@ export default function ChatSandbox({
               const isCompleted = localStep > stepNum;
               const isActive = localStep === stepNum;
               return (
-                <React.Fragment key={i}>
+                <Fragment key={i}>
                   {i > 0 && <div className={`step-line ${isCompleted ? 'completed' : ''}`} />}
                   <div
                     className={`step-dot ${isCompleted ? 'completed' : isActive ? 'active' : 'pending'}`}
@@ -533,7 +541,7 @@ export default function ChatSandbox({
                   >
                     {isCompleted ? '✓' : icon}
                   </div>
-                </React.Fragment>
+                </Fragment>
               );
             })}
           </div>

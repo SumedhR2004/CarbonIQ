@@ -1,4 +1,3 @@
-import React from 'react';
 import { LogIn, LogOut, ShieldAlert, Radio } from 'lucide-react';
 import FootprintLogo from './FootprintLogo';
 import { loginWithGoogle, logoutUser, isFirebaseAvailable } from '../firebase';
@@ -10,7 +9,7 @@ export default function Header({ user }) {
     } else {
       try {
         await loginWithGoogle();
-      } catch (err) {
+      } catch {
         alert("Authentication failed. Running in local cache mode.");
       }
     }

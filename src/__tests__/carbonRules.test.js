@@ -3,8 +3,7 @@ import {
   calculateCategoryScore, 
   calculateTotalScore, 
   generateActionPlan,
-  getCategoryBreakdown,
-  COEFF
+  getCategoryBreakdown
 } from '../utils/carbonRules';
 
 describe('CarbonIQ Calculations & Rules (8-Category Model)', () => {

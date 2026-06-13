@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Award, BarChart3, Calendar, CheckSquare, Compass, Info, Shield, Trash2, TrendingDown } from 'lucide-react';
+import { useState } from 'react';
+import { BarChart3, Calendar, CheckSquare, Compass, Trash2, TrendingDown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getCategoryBreakdown } from '../utils/carbonRules';
 
@@ -13,12 +13,13 @@ export default function AnalyticsDashboard({
 }) {
   const [completedActions, setCompletedActions] = useState(new Set());
   const [simulatedSaving, setSimulatedSaving] = useState(0);
+  const [prevActionPlan, setPrevActionPlan] = useState(actionPlan);
 
-  // Reset checked actions if actionPlan changes (e.g. on new calculation)
-  useEffect(() => {
+  if (actionPlan !== prevActionPlan) {
+    setPrevActionPlan(actionPlan);
     setCompletedActions(new Set());
     setSimulatedSaving(0);
-  }, [actionPlan]);
+  }
 
   const handleActionToggle = (action) => {
     const newCompleted = new Set(completedActions);

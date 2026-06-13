@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Settings, RefreshCw, Eye, EyeOff, Check, AlertCircle, ChevronDown, ChevronRight, Leaf, Globe, Shield } from 'lucide-react';
 import FootprintLogo from './FootprintLogo';
 
